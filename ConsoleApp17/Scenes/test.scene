@@ -1,0 +1,13 @@
+﻿PrototypeBackground(Scale=8)
+
+{
+	MouseFollow
+	UnitSelector
+	UnitSpawner
+	HitTestCollider
+}
+
+{
+	Camera
+	FreeCameraController
+}
