@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Editor;
 internal abstract class DebugWindow
 {
     public static readonly List<DebugWindow> Windows = new();
@@ -28,10 +28,10 @@ internal abstract class DebugWindow
 
     static DebugWindow()
     {
-        
+
     }
 
-    
+
 
     public static void LayoutAll()
     {
@@ -43,7 +43,7 @@ internal abstract class DebugWindow
 
     public DebugWindow()
     {
-        
+
     }
 
     public void Show()
@@ -64,7 +64,7 @@ internal abstract class DebugWindow
         }
 
         ImGui.SetNextWindowSize(new(400, 300), ImGuiCond.FirstUseEver);
-        if (isOpen && ImGui.Begin(this.Title, ref isOpen, this.WindowFlags))
+        if (isOpen && ImGui.Begin(Title, ref isOpen, WindowFlags))
         {
             OnLayout();
         }

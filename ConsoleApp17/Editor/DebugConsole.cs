@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Editor;
 
 internal class DebugConsole : DebugWindow
 {
@@ -22,7 +22,7 @@ internal class DebugConsole : DebugWindow
 
     private string inputText = string.Empty;
 
-    public override Key? KeyBind => Key.F1; 
+    public override Key? KeyBind => Key.F1;
     public override string Title => "Debug Console (F1)";
     public override ImGuiWindowFlags WindowFlags => ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
 
@@ -44,7 +44,7 @@ internal class DebugConsole : DebugWindow
             return result;
         }
 
-        this.RegisterCommand("window", args =>
+        RegisterCommand("window", args =>
         {
             switch (args[0])
             {
@@ -68,7 +68,7 @@ internal class DebugConsole : DebugWindow
         Console.SetOut(new DebugConsoleWriter(this, Console.Out));
 
         RegisterHelpDesc("echo", "echo: Writes it's arguments to the console.");
-        RegisterCommand("echo", args => 
+        RegisterCommand("echo", args =>
         {
             Write(string.Join(' ', args));
 
@@ -77,9 +77,14 @@ internal class DebugConsole : DebugWindow
 
         RegisterCommand("!", args => Console.WriteLine("am panick!"));
 
-        RegisterCommand("help", args => 
-        Console.WriteLine(this.commandHelp[args[0]]));
+        RegisterCommand("help", args =>
+        Console.WriteLine(commandHelp[args[0]]));
         RegisterAlias("?", "help");
+
+        RegisterCommand("clear", args =>
+        {
+            lines.Clear();
+        });
     }
 
     protected override void OnLayout()
@@ -153,9 +158,9 @@ internal class DebugConsole : DebugWindow
         //     lines.RemoveAt(lines.Count - 1);
         // }
 
-        if (this.lines.Count > MaxLines)
+        if (lines.Count > MaxLines)
         {
-            this.lines.RemoveAt(0);
+            lines.RemoveAt(0);
         }
     }
 
@@ -177,7 +182,7 @@ internal class DebugConsole : DebugWindow
 
         if (commands.ContainsKey(parts[0]))
         {
-            try 
+            try
             {
                 commands[parts[0]](parts[1..]);
             }

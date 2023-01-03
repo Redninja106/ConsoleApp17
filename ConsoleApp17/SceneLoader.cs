@@ -75,6 +75,9 @@ internal static class SceneLoader
                     case nameof(Transform.Rotation):
                         transform.Rotation = Convert.ToSingle(property.Value.GetValue());
                         break;
+                    case nameof(Transform.Scale):
+                        transform.Scale = (Vector2)property.Value.GetValue();
+                        break;
                     default:
                         throw new Exception();
                 }
@@ -101,7 +104,7 @@ internal static class SceneLoader
                 var fieldInfo = componentType.GetField(property.PropertyName);
                 if (fieldInfo is not null)
                 {
-                    fieldInfo.SetValue(component, property.Value.GetValue());
+                    fieldInfo.SetValue(component, Convert.ChangeType(property.Value.GetValue(), fieldInfo.FieldType));
                 }
                 else
                 {
@@ -150,7 +153,9 @@ internal static class SceneLoader
         public static readonly Parser<PropertyValue> parser =
             NumberPropertyValue.parser.Or(
                 StringPropertyValue.parser.Or<PropertyValue>(
-                    Vector2PropertyValue.parser
+                    Vector2PropertyValue.parser.Or<PropertyValue>(
+                            BoolPropertyValue.parser
+                        )
                     )
                 );
 
@@ -160,13 +165,14 @@ internal static class SceneLoader
     record NumberPropertyValue(decimal Value) : PropertyValue
     {
         public static new readonly Parser<NumberPropertyValue> parser =
+            from sign in Parse.Char('-').Select(c => c.ToString()).Optional()
             from whole in Parse.Digit.AtLeastOnce().Token()
             from rest in (
                 from dot in Parse.Char('.')
                 from fractional in Parse.Digit.Many().Token()
                 select string.Concat(fractional.Prepend(dot))
             ).Optional()
-            select new NumberPropertyValue(decimal.Parse($"{string.Concat(whole)}{rest.GetOrElse(string.Empty)}"));
+            select new NumberPropertyValue(decimal.Parse($"{sign.GetOrElse(string.Empty)}{string.Concat(whole)}{rest.GetOrElse(string.Empty)}"));
 
         public override object GetValue() => this.Value;
     }

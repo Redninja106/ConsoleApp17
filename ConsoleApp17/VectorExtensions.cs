@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,5 +21,19 @@ internal static class VectorExtensions
         float y = sin * vector.X + cos * vector.Y;
 
         return new(x, y);
+    }
+
+    public static Microsoft.Xna.Framework.Vector2 AsXNA(this Vector2 vector)
+    {
+        return Unsafe.As<Vector2, Microsoft.Xna.Framework.Vector2>(ref vector);
+    }
+    public static Vector2 AsNumericsVector(this Microsoft.Xna.Framework.Vector2 vector)
+    {
+        return Unsafe.As<Microsoft.Xna.Framework.Vector2, Vector2>(ref vector);
+    }
+
+    public static Vector2 WithLength(this Vector2 vector, float length)
+    {
+        return vector.Normalized() * length;
     }
 }

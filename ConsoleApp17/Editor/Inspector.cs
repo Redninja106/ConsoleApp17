@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Editor;
 internal class Inspector : DebugWindow
 {
     public static readonly Inspector Instance = new();
@@ -18,8 +18,8 @@ internal class Inspector : DebugWindow
 
     protected override void OnLayout()
     {
-        if (Inspectable is not null) 
-        { 
+        if (Inspectable is not null)
+        {
             Inspectable.Layout();
         }
         else
@@ -30,7 +30,7 @@ internal class Inspector : DebugWindow
 
     public void Inspect(IInspectable element)
     {
-        this.IsOpen = true;
+        IsOpen = true;
         Inspectable = element;
     }
 }

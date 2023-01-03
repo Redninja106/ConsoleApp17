@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using ConsoleApp17.Editor;
+using ImGuiNET;
 using SimulationFramework.Drawing;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ internal abstract class Component : IInspectable
         }
     }
 
+    public ref Transform ParentTransform => ref ParentEntity.Transform;
+
     public ulong ID { get; }
 
     public Component()
@@ -32,6 +35,7 @@ internal abstract class Component : IInspectable
     }
 
     public abstract void Initialize(Entity parent);
+
     public abstract void Update();
 
     public virtual void Layout() 

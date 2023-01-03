@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using ConsoleApp17.Editor;
+using ImGuiNET;
 using SimulationFramework.Drawing;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,29 @@ internal struct Transform : IInspectable
     private readonly Entity parentEntity;
     public Vector2 Position;
     public float Rotation;
+    public Vector2 Scale;
 
     public Vector2 Forward => Vector2.UnitX.Rotate(Rotation);
     public Vector2 Backward => Vector2.UnitX.Rotate(Rotation + MathF.PI);
     public Vector2 Left => Vector2.UnitX.Rotate(Rotation + MathF.PI * .5f);
     public Vector2 Right => Vector2.UnitX.Rotate(Rotation + MathF.PI * 1.5f);
 
+    public Vector2 WorldPosition
+    {
+        get => TransformPoint(Position, TransformSpace.Local, TransformSpace.World);
+        set => Position = TransformPoint(value, TransformSpace.World, TransformSpace.Local);
+    }
+
     public Transform(Entity entity)
     {
         this.parentEntity = entity;
+    }
+
+    public void Reset()
+    {
+        Position = Vector2.Zero;
+        Rotation = 0.0f;
+        Scale = Vector2.One;
     }
 
     public void Translate(Vector2 translation, TransformSpace space)
@@ -58,12 +73,12 @@ internal struct Transform : IInspectable
 
     private Matrix3x2 CreateParentToLocalMatrix()
     {
-        return Matrix3x2.CreateTranslation(-Position) * Matrix3x2.CreateRotation(-Rotation);
+        return Matrix3x2.CreateTranslation(-Position) * Matrix3x2.CreateRotation(-Rotation) * Matrix3x2.CreateScale(Vector2.One / Scale);
     }
 
     private Matrix3x2 CreateLocalToParentMatrix()
     {
-        return Matrix3x2.CreateRotation(Rotation) * Matrix3x2.CreateTranslation(Position);
+        return Matrix3x2.CreateScale(Scale) * Matrix3x2.CreateRotation(Rotation) * Matrix3x2.CreateTranslation(Position);
     }
 
     private Matrix3x2 CreateLocalToWorldMatrix()
@@ -102,12 +117,13 @@ internal struct Transform : IInspectable
 
     public void ApplyTo(ICanvas canvas)
     {
-        canvas.Transform(this.CreateLocalToWorldMatrix());
+        canvas.Transform(this.CreateLocalToParentMatrix());
     }
 
     public void Layout()
     {
         ImGui.DragFloat2("Position", ref this.Position);
         ImGui.DragFloat("Rotation", ref this.Rotation);
+        ImGui.DragFloat2("Scale", ref this.Scale);
     }
 }

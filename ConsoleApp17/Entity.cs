@@ -23,17 +23,20 @@ internal class Entity : Component
     protected Entity(string? name = null)
     {
         this.Name = name ?? base.ToString();
+        this.transform.Reset();
     }
 
     public override void Initialize(Entity parent)
     {
         Vector2 pos = transform.Position;
         float rotation = transform.Rotation;
+        Vector2 scale = transform.Scale;
 
         transform = new(parent);
 
         transform.Position = pos;
         transform.Rotation = rotation;
+        transform.Scale = scale;
 
         for (int i = 0; i < components.Count; i++)
         {
@@ -60,6 +63,11 @@ internal class Entity : Component
         AddComponentCore(component);
 
         return component;
+    }
+
+    public bool HasComponent<T>() where T : Component
+    {
+        return components.OfType<T>().Any();
     }
 
     public Component AddComponent(Type type)
@@ -112,7 +120,14 @@ internal class Entity : Component
         if (ImGui.CollapsingHeader("Transform"))
         {
             transform.Layout();
-            ImGui.TreePop();
+        }
+
+        foreach (var component in components)
+        {
+            if (component is not Entity && ImGui.CollapsingHeader(component.GetType().Name))
+            {
+                component.Layout();
+            }
         }
     }
 
@@ -124,7 +139,10 @@ internal class Entity : Component
         for (int i = 0; i < components.Count; i++)
         {
             var component = components[i];
+
+            canvas.PushState();
             component.Render(canvas);
+            canvas.PopState();
         }
 
         canvas.PopState();
@@ -153,6 +171,31 @@ internal class Entity : Component
     {
         return this.Name;
     }
+
+    public T? FindComponent<T>() where T : Component
+    {
+        return FindComponent<T>(c => true);
+    }
+
+    public T? FindComponent<T>(Predicate<T> predicate) where T : Component
+    {
+        foreach (var component in components)
+        {
+            if (component is T foundComponent && predicate(foundComponent))
+                return foundComponent;
+        }
+
+        foreach (var entity in components.OfType<Entity>())
+        {
+            var component = entity.FindComponent(predicate);
+
+            if (component is not null)
+                return component;
+        }
+
+        return null;
+    }
+
 
     private record struct EntityProvider(string? Name) : IComponentProvider<Entity>
     {

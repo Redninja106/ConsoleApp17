@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Editor;
 internal class CameraWindow : DebugWindow
 {
     public static readonly CameraWindow Instance = new();

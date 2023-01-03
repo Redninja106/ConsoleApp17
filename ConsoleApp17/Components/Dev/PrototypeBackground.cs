@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Components.Dev;
 internal class PrototypeBackground : Component
 {
     private ITexture backgroundTexture;
@@ -42,7 +42,7 @@ internal class PrototypeBackground : Component
         {
             for (float x = -50; x < 50; x++)
             {
-                skcanvas.DrawBitmap(bitmap, new SKRect(x * Scale - float.Epsilon, y * Scale - float.Epsilon, (x + 1) * Scale + float.Epsilon, (y + 1) * Scale + float.Epsilon), paint);      
+                skcanvas.DrawBitmap(bitmap, new SKRect(x * Scale - float.Epsilon, y * Scale - float.Epsilon, (x + 1) * Scale + float.Epsilon, (y + 1) * Scale + float.Epsilon), paint);
                 // canvas.DrawTexture(backgroundTexture, new Rectangle(x, y, 1, 1, Alignment.Center));
             }
         }

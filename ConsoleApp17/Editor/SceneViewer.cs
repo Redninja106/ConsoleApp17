@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace ConsoleApp17.Editor;
 internal class SceneViewer : DebugWindow
 {
     public static readonly SceneViewer Instance = new();
@@ -24,7 +24,7 @@ internal class SceneViewer : DebugWindow
 
     private void LayoutEntity(Entity entity)
     {
-        if (TreeEntry(entity.ToString(), entity)) 
+        if (TreeEntry(entity.ToString(), entity))
         {
             foreach (var component in entity.Components)
             {

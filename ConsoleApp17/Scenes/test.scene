@@ -1,13 +1,25 @@
 ﻿PrototypeBackground(Scale=8)
+PhysicsManager
+BoxSpawner
 
 {
-	MouseFollow
-	UnitSelector
-	UnitSpawner
-	HitTestCollider
+	PhysicsBody
+	BoxCollider
+	PlayerController
+	{
+		PlayerRenderer
+	}
+	{
+		Camera
+		PlayerCameraController
+	}
 }
 
 {
-	Camera
-	FreeCameraController
+	Transform(Scale=(0.5,0.5))
+	PhysicsBody
+	MarchingSquaresVolume(Width=100 Height=100)
+	MarchingSquaresRenderer
+	MarchingSquaresCollider
+	MarchingSquaresVolumeEditor
 }
