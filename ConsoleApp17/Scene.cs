@@ -17,6 +17,19 @@ internal class Scene : Entity
 
     }
 
+    public override void Render(ICanvas canvas)
+    {
+        base.Render(canvas);
+    }
+
+    private void RenderComponent(Component component)
+    {
+        if (component is Entity entity)
+        {
+
+        }
+    }
+
     public void Initialize()
     {
         this.Initialize(null!);
@@ -27,10 +40,8 @@ internal class Scene : Entity
         Active = this;
     }
 
-    public override void Update()
+    public void UpdatePhysics()
     {
         Physics.UpdateWorld();
-
-        base.Update();
     }
 }

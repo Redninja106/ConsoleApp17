@@ -13,10 +13,10 @@ internal class BoxCollider : Collider
     public float Width = 1;
     public float Height = 1;
 
-    public override Shape CreateShape(float density)
+    public override IEnumerable<Shape> CreateShapes(float density)
     {
         var shape = new PolygonShape(density);
         shape.SetAsBox(Width / 2, Height / 2);
-        return shape;
+        yield return shape;
     }
 }

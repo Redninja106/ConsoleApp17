@@ -50,7 +50,9 @@ internal class PlayerController : Component
         }
 
         body.InternalBody.LinearDamping = .9f;
-                moveDirection = moveDirection.Normalized();
+        
+        if (moveDirection.LengthSquared() > 1)
+            moveDirection = moveDirection.Normalized();
 
         body.AddForce(moveDirection * 5000 * Time.DeltaTime);
     }

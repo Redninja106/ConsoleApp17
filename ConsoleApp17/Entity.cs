@@ -1,10 +1,12 @@
-﻿using ImGuiNET;
+﻿using Genbox.VelcroPhysics.Shared;
+using ImGuiNET;
 using SimulationFramework.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,8 +14,13 @@ namespace ConsoleApp17;
 internal class Entity : Component
 {
     private readonly List<Component> components = new();
+    private bool canModifyComponents = true;
+    
     private Transform transform;
     private bool isInitialized = false;
+
+    private readonly Queue<Component> addQueue = new();
+    private readonly Queue<Component> removeQueue = new();
 
     public IEnumerable<Component> Components => components;
     public ref Transform Transform => ref transform;
@@ -28,15 +35,17 @@ internal class Entity : Component
 
     public override void Initialize(Entity parent)
     {
-        Vector2 pos = transform.Position;
-        float rotation = transform.Rotation;
-        Vector2 scale = transform.Scale;
+        // save existing pos/rot/scale as it may have been set by scene loader
+        Transform oldTransform = this.transform;
 
-        transform = new(parent);
+        transform = new(parent)
+        {
+            Position = oldTransform.Position,
+            Rotation = oldTransform.Rotation,
+            Scale = oldTransform.Scale
+        };
 
-        transform.Position = pos;
-        transform.Rotation = rotation;
-        transform.Scale = scale;
+        ClearQueues();
 
         for (int i = 0; i < components.Count; i++)
         {
@@ -86,7 +95,15 @@ internal class Entity : Component
         Debug.Assert(component.ParentEntity == this);
         Debug.Assert(!components.Contains(component));
 
-        components.Add(component);
+        if (canModifyComponents)
+        {
+            components.Add(component);
+
+        }
+        else
+        {
+            addQueue.Enqueue(component);
+        }
 
         if (isInitialized)
         {
@@ -96,9 +113,21 @@ internal class Entity : Component
 
     public void RemoveComponent<T>(T component) where T : Component
     {
+        RemoveComponent(component as Component);
+    }
+
+    public void RemoveComponent(Component component)
+    {
         Debug.Assert(components.Contains(component));
 
-        components.Remove(component);
+        if (canModifyComponents)
+        {
+            components.Remove(component);
+        }
+        else
+        {
+            removeQueue.Enqueue(component);
+        }
     }
 
     public T? GetComponent<T>() where T : Component
@@ -113,6 +142,8 @@ internal class Entity : Component
 
     public override void Layout()
     {
+        canModifyComponents = false;
+
         ImGui.Text(this.ToString());
 
         ImGui.Separator();
@@ -129,12 +160,16 @@ internal class Entity : Component
                 component.Layout();
             }
         }
+        canModifyComponents = true;
+        ClearQueues();
     }
 
     public override void Render(ICanvas canvas)
     {
+        canModifyComponents = false;
+
         canvas.PushState();
-        transform.ApplyTo(canvas);  
+        transform.ApplyTo(canvas);
 
         for (int i = 0; i < components.Count; i++)
         {
@@ -146,15 +181,32 @@ internal class Entity : Component
         }
 
         canvas.PopState();
+
+        canModifyComponents = true;
+        ClearQueues();
     }
 
     public override void Update()
     {
+        canModifyComponents = false;
+
         for (int i = 0; i < components.Count; i++)
         {
             var component = components[i];
             component.Update();
         }
+
+        canModifyComponents = true;
+        ClearQueues();
+    }
+
+    public static Entity Create(string archetypePath, Entity parent, string? name = null)
+    {
+        var entity = Create(parent, name);
+
+        SceneLoader.AttachArchetype(entity, archetypePath);
+        
+        return entity;
     }
 
     public static Entity Create(Entity parent, string? name = null)
@@ -196,12 +248,44 @@ internal class Entity : Component
         return null;
     }
 
-
     private record struct EntityProvider(string? Name) : IComponentProvider<Entity>
     {
         public Entity CreateComponent(Entity parent)
         {
             return new(Name) { ParentEntity = parent };
         }
+    }
+
+    internal void OnChildDestroyed(Component component)
+    {
+        RemoveComponent(component);
+    }
+
+    private void ClearQueues()
+    {
+        while (removeQueue.Any())
+        {
+            components.Remove(removeQueue.Dequeue());
+        }
+
+        while (addQueue.Any())
+        {
+            components.Add(addQueue.Dequeue());
+        }
+    }
+
+    public override void Destroy()
+    {
+        canModifyComponents = false;
+
+        foreach (var component in components)
+        {
+            component.Destroy();
+        }
+        
+        canModifyComponents = true;
+        ClearQueues();
+
+        base.Destroy();
     }
 }

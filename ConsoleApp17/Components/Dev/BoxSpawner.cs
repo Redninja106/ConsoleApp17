@@ -16,11 +16,11 @@ internal class BoxSpawner : Component
     {
         if (Mouse.IsButtonPressed(MouseButton.Middle))
         {
-            var box = Entity.Create(Scene.Active);
+            var box = Entity.Create("./Components/Dev/box.arch", Scene.Active);
 
-            box.AddComponent<BoxRenderer>();
-            box.AddComponent<PhysicsBody>();
-            box.AddComponent<BoxCollider>();
+            // box.AddComponent<BoxRenderer>();
+            // box.AddComponent<PhysicsBody>();
+            // box.AddComponent<BoxCollider>();
 
             box.Transform.Position = Camera.Active.ScreenToWorld(Mouse.Position);
         }

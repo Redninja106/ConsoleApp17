@@ -15,7 +15,7 @@ internal class Camera : Component
     private float verticalSize = 1.0f;
 
     public static Camera Main { get; private set; }
-    public static Camera Active { get; private set; }
+    public static Camera Active { get; set; }
 
     public float AspectRatio => DisplayWidth / (float)DisplayHeight;
 
@@ -54,8 +54,6 @@ internal class Camera : Component
 
     public void ApplyTo(ICanvas canvas)
     {
-        Active = this;
-
         DisplayWidth = canvas.Width;
         DisplayHeight = canvas.Height;
 

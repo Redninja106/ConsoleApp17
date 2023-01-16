@@ -10,36 +10,62 @@ using System.Threading.Tasks;
 namespace ConsoleApp17.Physics;
 internal abstract class Collider : Component
 {
-    private static readonly List<Collider> allColliders = new();
+    public float Density { get; set; } = 1.0f;
+    public float Friction { get; set; } = 0.2f;
+    public float Restitution { get; set; } = 0.0f;
 
-    private Shape shape;
-    private Fixture fixture;
     public PhysicsBody Body { get; private set; }
+    private readonly List<Fixture> fixtures = new();
 
-    public abstract Shape CreateShape(float density);
+    public abstract IEnumerable<Shape> CreateShapes(float density);
 
     public override void Initialize(Entity parent)
     {
-        allColliders.Add(this);
-
-        Body = parent.GetComponent<PhysicsBody>() ?? throw new Exception();
+        Body = GetComponentInParents<PhysicsBody>() ?? throw new Exception();
         
-        this.shape = CreateShape(1.0f);
-
-        var def = new FixtureDef()
-        {
-            Shape = shape,
-        };
-
-        fixture = Body.InternalBody.CreateFixture(def);
+        Invalidate();
     }
 
     public override void Update()
     {
     }
 
-    public static Collider GetFromFixture(Fixture fixture)
+    protected void Invalidate()
     {
-        return allColliders.Single(c => c.fixture == fixture);
+        RemoveFixtures();
+
+        foreach (var shape in CreateShapes(Density))
+        {
+            FixtureDef def = new()
+            {
+                Shape = shape,
+                Friction = Friction,
+                Restitution = Restitution,
+            };
+
+
+            var fixture = Body.InternalBody.CreateFixture(def);
+
+            fixture.UserData = this;
+
+            fixtures.Add(fixture);
+        }
+    }
+
+    public override void Destroy()
+    {
+        RemoveFixtures();
+
+        base.Destroy();
+    }
+
+    void RemoveFixtures()
+    {
+        foreach (var f in fixtures)
+        {
+            Body.InternalBody.DestroyFixture(f);
+        }
+
+        fixtures.Clear();
     }
 }

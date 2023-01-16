@@ -18,6 +18,7 @@ void Init(AppConfig config)
     DebugWindow.Windows.Add(DebugConsole.Instance);
     DebugWindow.Windows.Add(Inspector.Instance);
     DebugWindow.Windows.Add(CameraWindow.Instance);
+    DebugWindow.Windows.Add(DebugDrawWindow.Instance);
 }
 
 void Render(ICanvas canvas)
@@ -27,9 +28,14 @@ void Render(ICanvas canvas)
     canvas.StrokeWidth(0);
     canvas.Clear(Color.Black);
 
-    if (Camera.Main is not null)
+    Camera.Active = Camera.Main;
+
+    scene.Update();
+    scene.UpdatePhysics();
+
+    if (Camera.Active is not null)
     {
-        Camera.Main?.ApplyTo(canvas);
+        Camera.Active?.ApplyTo(canvas);
 
         scene!.Render(canvas);
     }
@@ -38,5 +44,18 @@ void Render(ICanvas canvas)
         canvas.DrawText("No Active Cameras.", new(5, 5));
     }
 
-    scene!.Update();
 }
+
+class Ship : Component
+{
+    public override void Initialize(Entity parent)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Update()
+    {
+        throw new NotImplementedException();
+    }
+}
+

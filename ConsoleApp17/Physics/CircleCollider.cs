@@ -10,8 +10,8 @@ internal class CircleCollider : Collider
 {
     public float Radius = 1.0f;
 
-    public override Shape CreateShape(float density)
+    public override IEnumerable<Shape> CreateShapes(float density)
     {
-        return new CircleShape(Radius, density);
+        yield return new CircleShape(Radius, density);
     }
 }

@@ -1,25 +1,11 @@
-﻿PrototypeBackground(Scale=8)
+﻿using Box = "./Components/Dev/box.arch"
+using Asteroid = "./Components/Asteroid/asteroid.arch"
+using Player = "./Components/Player/player.arch"
+
+PrototypeBackground(Scale=8)
 PhysicsManager
 BoxSpawner
+AsteroidEditor
+AsteroidGenerator
 
-{
-	PhysicsBody
-	BoxCollider
-	PlayerController
-	{
-		PlayerRenderer
-	}
-	{
-		Camera
-		PlayerCameraController
-	}
-}
-
-{
-	Transform(Scale=(0.5,0.5))
-	PhysicsBody
-	MarchingSquaresVolume(Width=100 Height=100)
-	MarchingSquaresRenderer
-	MarchingSquaresCollider
-	MarchingSquaresVolumeEditor
-}
+Player

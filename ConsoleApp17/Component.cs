@@ -12,6 +12,8 @@ internal abstract class Component : IInspectable
 {
     private readonly Entity? parentEntity;
     private static ulong nextID = 1;
+    
+    public bool IsDestroyed { get; private set; }
 
     public Entity ParentEntity 
     { 
@@ -29,6 +31,8 @@ internal abstract class Component : IInspectable
 
     public ulong ID { get; }
 
+    public event Action<Component>? Destroyed;
+
     public Component()
     {
         this.ID = nextID++;
@@ -40,16 +44,18 @@ internal abstract class Component : IInspectable
 
     public virtual void Layout() 
     {
-        ImGui.Text(this.ToString());
+        Inspector.Instance.LayoutObject(this);
     }
 
     public virtual void Destroy()
     {
-
+        Destroyed?.Invoke(this);
+        ParentEntity.OnChildDestroyed(this);
+        IsDestroyed = true;
     }
 
     public virtual void Render(ICanvas canvas) 
-    { 
+    {
     }
 
     public override string ToString()
@@ -57,5 +63,24 @@ internal abstract class Component : IInspectable
         return $"{GetType().Name} (id: {ID})";
     }
 
-    
+    public T? GetSibling<T>() where T : Component => ParentEntity.GetComponent<T>();
+    public T? GetSibling<T>(Predicate<T> predicate) where T : Component => ParentEntity.GetComponent<T>(predicate);
+
+    public T? GetComponentInParents<T>() where T : Component
+    {
+        Entity? current = parentEntity;
+        T? result = null;
+
+        while (current is not null)
+        {
+            result = current.GetComponent<T>();
+
+            if (result is not null)
+                break;
+            
+            current = current.parentEntity;
+        }
+
+        return result;
+    }
 }

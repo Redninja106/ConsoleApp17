@@ -16,7 +16,12 @@ internal class PhysicsBody : Component
         get => InternalBody.LinearVelocity.AsNumericsVector();
         set => InternalBody.ApplyLinearImpulse(InternalBody.Mass * (value.AsXNA() - InternalBody.LinearVelocity));
     }
-    public float AngularVeloctiy => InternalBody.AngularVelocity;
+
+    public float AngularVeloctiy
+    {
+        get => InternalBody.AngularVelocity;
+        set => InternalBody.AngularVelocity = value;
+    }
 
     public bool Fixed = false;
     public bool Kinematic = false;
@@ -34,7 +39,6 @@ internal class PhysicsBody : Component
             Type = Fixed ? BodyType.Static : (Kinematic ? BodyType.Kinematic : BodyType.Dynamic),
         };
 
-
         InternalBody = Scene.Active.Physics.World.CreateBody(bodyDef);
 
         InternalBody.OnCollision = this.HandleCollision;
@@ -45,8 +49,8 @@ internal class PhysicsBody : Component
 
     private void HandleCollision(Fixture fixtureA, Fixture fixtureB, Genbox.VelcroPhysics.Collision.ContactSystem.Contact contact)
     {
-        var colliderA = Collider.GetFromFixture(fixtureA);
-        var colliderB = Collider.GetFromFixture(fixtureB);
+        var colliderA = (Collider)fixtureA.UserData;
+        var colliderB = (Collider)fixtureB.UserData;
 
         Contact c = new(contact.Manifold.LocalPoint.AsNumericsVector(), contact.Manifold.LocalNormal.AsNumericsVector());
         OnCollision?.Invoke(colliderA, colliderB, c);
@@ -93,12 +97,5 @@ internal class PhysicsBody : Component
     public void AddImpulse(Vector2 impulse)
     {
         InternalBody.ApplyLinearImpulse(impulse.AsXNA());
-    }
-
-    public override void Layout()
-    {
-        ImGui.Text($"Fixed: {Fixed}");
-        ImGui.Text($"Velocity: {Velocity}");
-        ImGui.Text($"Angular Velocity: {AngularVeloctiy}");
     }
 }

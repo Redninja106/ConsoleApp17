@@ -22,7 +22,6 @@ internal class PrototypeBackground : Component
 
     public override void Update()
     {
-
     }
 
     public override void Render(ICanvas canvas)

@@ -1,0 +1,10 @@
+﻿PhysicsBody
+CircleCollider(Radius=0.5)
+PlayerController
+{
+	PlayerRenderer
+}
+{
+	Camera
+	PlayerCameraController
+}
