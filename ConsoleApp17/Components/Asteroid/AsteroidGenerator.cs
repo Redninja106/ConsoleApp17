@@ -9,6 +9,8 @@ namespace ConsoleApp17.Components.Asteroid;
 internal class AsteroidGenerator : Component
 {
     public float Scale;
+    public bool visible;
+    public Vector2 offset;
 
     [Button]
     public void Generate()
@@ -45,7 +47,7 @@ internal class AsteroidGenerator : Component
     [Button]
     public void Show()
     {
-        
+        visible = !visible;
     }
 
     public override void Initialize(Entity parent)
@@ -58,22 +60,25 @@ internal class AsteroidGenerator : Component
 
     public override void Render(ICanvas canvas)
     {
-        //var perlin = new PerlinNoise(0);
+        if (visible)
+        {
+            var perlin = new PerlinNoise(0);
 
-        //for (int y = -2; y <= 2; y++)
-        //{
-        //    for (int x = -2; x <= 2; x++)
-        //    {
-        //        for (int cy = 0; cy < AsteroidChunk.CHUNK_SIZE; cy++)
-        //        {
-        //            for (int cx = 0; cx < AsteroidChunk.CHUNK_SIZE; cx++)
-        //            {
-        //                Vector2 pos = new(x * AsteroidChunk.CHUNK_SIZE + cx, y * AsteroidChunk.CHUNK_SIZE + cy);
-        //                canvas.DrawCircle(pos, MathHelper.Normalize(perlin.Sample(pos * Scale)));
-        //            }
-        //        }
-        //    }
-        //}
+            for (int y = -2; y <= 2; y++)
+            {
+                for (int x = -2; x <= 2; x++)
+                {
+                    for (int cy = 0; cy < AsteroidChunk.CHUNK_SIZE; cy++)
+                    {
+                        for (int cx = 0; cx < AsteroidChunk.CHUNK_SIZE; cx++)
+                        {
+                            Vector2 pos = new Vector2(x * AsteroidChunk.CHUNK_SIZE + cx, y * AsteroidChunk.CHUNK_SIZE + cy);
+                            canvas.DrawCircle(pos, .5f * perlin.Sample(pos * Scale + offset));
+                        }
+                    }
+                }
+            }
+        }
         base.Render(canvas);
     }
 }

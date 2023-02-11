@@ -5,7 +5,5 @@ using Player = "./Components/Player/player.arch"
 PrototypeBackground(Scale=8)
 PhysicsManager
 BoxSpawner
-AsteroidEditor
-AsteroidGenerator
 
 Player

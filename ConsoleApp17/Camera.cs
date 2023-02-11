@@ -52,11 +52,14 @@ internal class Camera : Component
     {
     }
 
+    public void SetDisplaySize(int width, int height)
+    {
+        DisplayWidth = width;
+        DisplayHeight = height;
+    }
+
     public void ApplyTo(ICanvas canvas)
     {
-        DisplayWidth = canvas.Width;
-        DisplayHeight = canvas.Height;
-
         // world to screen space
         canvas.Transform(CreateLocalToScreenMatrix());
 

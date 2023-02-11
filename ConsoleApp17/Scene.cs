@@ -10,7 +10,7 @@ internal class Scene : Entity
 {
     public static Scene Active { get; private set; }
 
-    public PhysicsManager Physics => GetComponent<PhysicsManager>() ?? throw new Exception();
+    public PhysicsManager? Physics => GetComponent<PhysicsManager>();
 
     public Scene() : base()
     {
@@ -24,10 +24,6 @@ internal class Scene : Entity
 
     private void RenderComponent(Component component)
     {
-        if (component is Entity entity)
-        {
-
-        }
     }
 
     public void Initialize()
@@ -42,6 +38,6 @@ internal class Scene : Entity
 
     public void UpdatePhysics()
     {
-        Physics.UpdateWorld();
+        Physics?.UpdateWorld();
     }
 }
