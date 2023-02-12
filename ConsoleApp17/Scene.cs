@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ConsoleApp17.Physics;
 
 namespace ConsoleApp17;
-internal class Scene : Entity
+public class Scene : Entity
 {
     public static Scene Active { get; private set; }
 

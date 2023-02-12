@@ -8,7 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal class Sprite
+
+public class Sprite
 {
     public readonly ITexture texture;
     public Vector2 Size { get; set; }

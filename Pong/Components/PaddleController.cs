@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleApp17;
 
-namespace ConsoleApp17.Components.Pong;
+namespace Pong.Components;
 internal class PaddleController : Component
 {
     private static (Key up, Key down)[] playerKeys = new[]
@@ -27,7 +28,7 @@ internal class PaddleController : Component
         float delta = 0;
 
         var keys = playerKeys[PlayerIndex];
-        
+
         if (Keyboard.IsKeyDown(keys.up))
             delta++;
         if (Keyboard.IsKeyDown(keys.down))

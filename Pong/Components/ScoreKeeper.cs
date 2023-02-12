@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleApp17;
 
-namespace ConsoleApp17.Components.Pong;
+namespace Pong.Components;
 internal class ScoreKeeper : Component
 {
     public int rightPlayerScore; // 0

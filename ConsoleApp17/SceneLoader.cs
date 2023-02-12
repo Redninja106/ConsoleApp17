@@ -4,26 +4,28 @@ using System.Reflection;
 using System.Security.AccessControl;
 
 namespace ConsoleApp17;
-internal static class SceneLoader
+public static class SceneLoader
 {
     private static Parser<string> parseIdentifier = Parse.Letter.Then(c => Parse.LetterOrDigit.Many().Select(chars => string.Concat(chars.Prepend(c)))).Token();
     private static Dictionary<string, IEnumerable<SceneElement>> loadedArchetypeFiles = new();
     private static Parser<IEnumerable<SceneElement>> sceneParser = SceneElement.parser.Many().End();
 
-    public static Scene LoadScene(string path)
+    public static Scene LoadScene(string path, Assembly? mainAssembly = null)
     {
+        mainAssembly ??= Assembly.GetCallingAssembly();
+
         var content = File.ReadAllText(path);
 
         var commentParser = new CommentParser();
         var elements = sceneParser.Commented(commentParser).Parse(content) ?? throw new Exception();
 
-        return CreateScene(elements.Value);
+        return CreateScene(elements.Value, mainAssembly);
     }
 
-    private static Scene CreateScene(IEnumerable<SceneElement> elements)
+    private static Scene CreateScene(IEnumerable<SceneElement> elements, Assembly mainAssembly)
     {
         Scene result = new Scene();
-        var context = new SceneLoadContext();
+        var context = new SceneLoadContext(mainAssembly);
 
         foreach (var element in elements)
         {
@@ -35,21 +37,22 @@ internal static class SceneLoader
 
     private static void CreateSceneElement(SceneLoadContext context, Entity parent, SceneElement element)
     {
-        if (element is EntityDesc entityDesc)
+        switch (element)
         {
-            CreateEntity(context, parent, entityDesc);
-        }
-        else if (element is ComponentDesc componentDesc)
-        {
-            CreateComponent(context, parent, componentDesc);
-        }
-        else if (element is UsingElement usingElement)
-        {
-            context.imports.Add(usingElement.Alias, usingElement.Path.Value);
-        }
-        else
-        {
-            throw new Exception();
+            case EntityDesc entityDesc:
+                CreateEntity(context, parent, entityDesc);
+                break;
+            case ComponentDesc componentDesc:
+                CreateComponent(context, parent, componentDesc);
+                break;
+            case UsingAliasElement usingElement:
+                context.imports.Add(usingElement.Alias, usingElement.Path.Value);
+                break;
+            case UsingImportElement importElement:
+                context.AddSearchAssembly(Assembly.Load(importElement.AssemblyName));
+                break;
+            default:
+                throw new Exception();
         }
     }
 
@@ -81,11 +84,14 @@ internal static class SceneLoader
     {
         if (context.imports.TryGetValue(componentDesc.TypeName, out var archetype))
         {
-            Entity.Create(archetype, parent);
+            Entity.Create(archetype, context.mainAssembly, parent);
             return;
         }
 
-        var componentType = Assembly.GetExecutingAssembly().GetTypes().Single(t => t.Name == componentDesc.TypeName);
+        var componentType = context.FindType(componentDesc.TypeName);
+
+        if (componentType is null)
+            throw new Exception();
 
         if (componentType == typeof(Transform))
         {
@@ -112,9 +118,6 @@ internal static class SceneLoader
             return;
         }
 
-        if (componentType is null)
-            throw new Exception();
-
         var component = parent.AddComponent(componentType);
 
         foreach (var property in componentDesc.PropertyDescs)
@@ -140,9 +143,9 @@ internal static class SceneLoader
         }
     }
 
-    private static void AttachArchetype(Entity parent, IEnumerable<SceneElement> archetype)
+    private static void AttachArchetype(Entity parent, IEnumerable<SceneElement> archetype, Assembly mainAssembly)
     {
-        var context = new SceneLoadContext();
+        var context = new SceneLoadContext(mainAssembly);
 
         foreach (var element in archetype)
         {
@@ -150,32 +153,70 @@ internal static class SceneLoader
         }
     }
 
-    public static void AttachArchetype(Entity parent, string archetypePath)
+    public static void AttachArchetype(Entity parent, string archetypePath, Assembly? mainAssembly = null)
     {
-        AttachArchetype(parent, GetArchetype(archetypePath));
-    }
+        mainAssembly ??= Assembly.GetCallingAssembly();
 
+        AttachArchetype(parent, GetArchetype(archetypePath), mainAssembly);
+    }
 
     class SceneLoadContext
     {
+        public readonly Assembly mainAssembly;
+        public readonly List<Assembly> searchAssemblies = new();
         public readonly Dictionary<string, string> imports = new();
+
+        public SceneLoadContext(Assembly mainAssembly)
+        {
+            this.mainAssembly = mainAssembly;
+
+            AddSearchAssembly(mainAssembly);
+            AddSearchAssembly(Assembly.GetExecutingAssembly());
+        }
+
+        public Type? FindType(string name)
+        {
+            Type[] types = searchAssemblies.SelectMany(a => a.GetTypes()).ToArray();
+            return types.SingleOrDefault(t => t.Name == name);
+        }
+
+        public void AddSearchAssembly(Assembly assembly)
+        {
+            if (searchAssemblies.Contains(assembly))
+                return;
+
+            searchAssemblies.Add(assembly);
+        }
     }
 
     record SceneElement(string TypeName)
     {
         public static readonly Parser<SceneElement> parser = 
-            Parse.Or<SceneElement>(UsingElement.parser, ComponentDesc.parser)
+            Parse.Or<SceneElement>(
+                UsingAliasElement.parser,
+                UsingImportElement.parser)
+            .Or(ComponentDesc.parser)
             .Or(EntityDesc.parser);
     }
 
-    record UsingElement(string Alias, StringPropertyValue Path) : SceneElement(Alias)
+    record UsingAliasElement(string Alias, StringPropertyValue Path) : SceneElement(Alias)
     {
-        public static new readonly Parser<UsingElement> parser =
+        public static new readonly Parser<UsingAliasElement> parser =
             from usingKeyword in Parse.String("using").Token()
             from alias in parseIdentifier
             from equal in Parse.Char('=').Token()
             from path in StringPropertyValue.parser.Token()
-            select new UsingElement(alias, path);
+            select new UsingAliasElement(alias, path);
+    }
+
+    record UsingImportElement(string AssemblyName) : SceneElement(AssemblyName)
+    {
+
+        public static new readonly Parser<UsingImportElement> parser =
+            from usingKeyword in Parse.String("using").Token()
+            from assemblyName in parseIdentifier.DelimitedBy(Parse.Char('.'))
+            select new UsingImportElement(string.Join('.', assemblyName.ToArray()));
+
     }
 
     record EntityDesc(IEnumerable<SceneElement> children) : SceneElement(nameof(Entity))

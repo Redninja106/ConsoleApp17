@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace ConsoleApp17;
-internal class Game : Simulation
+public class Game : Simulation
 {
     public Scene Scene { get; private set; }
+
+    public Game(string scenePath) : this(SceneLoader.LoadScene(scenePath, Assembly.GetCallingAssembly()))
+    {
+
+    }
 
     public Game(Scene scene)
     {
@@ -26,7 +31,6 @@ internal class Game : Simulation
         DebugWindow.Windows.Add(DebugConsole.Instance);
         DebugWindow.Windows.Add(Inspector.Instance);
         DebugWindow.Windows.Add(CameraWindow.Instance);
-        DebugWindow.Windows.Add(DebugDrawWindow.Instance);
     }
 
     public override void OnRender(ICanvas canvas)

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal abstract class Component : IInspectable
+public abstract class Component : IInspectable
 {
     private readonly Entity? parentEntity;
     private static ulong nextID = 1;

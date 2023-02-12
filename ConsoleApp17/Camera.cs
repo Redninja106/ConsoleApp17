@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal class Camera : Component
+public class Camera : Component
 {
     public int DisplayWidth { get; private set; }
     public int DisplayHeight { get; private set; }

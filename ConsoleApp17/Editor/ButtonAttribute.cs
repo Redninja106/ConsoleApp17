@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ConsoleApp17.Editor;
 
 [AttributeUsage(AttributeTargets.Method)]
-internal class ButtonAttribute : Attribute
+public class ButtonAttribute : Attribute
 {
     public string? Name { get; }
 

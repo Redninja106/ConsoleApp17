@@ -1,11 +1,12 @@
-﻿using ConsoleApp17.Physics;
+﻿using ConsoleApp17;
+using ConsoleApp17.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Pong;
+namespace Pong.Components;
 internal class BallController : Component
 {
     PhysicsBody body;
@@ -41,9 +42,9 @@ internal class BallController : Component
     public void Reset(Vector2? newVelocity)
     {
         if (newVelocity is not null)
-            this.body.Velocity = newVelocity.Value;
+            body.Velocity = newVelocity.Value;
 
-        this.ParentTransform.Position = Vector2.Zero;
+        ParentTransform.Position = Vector2.Zero;
         body.SyncFromTransform();
     }
 }

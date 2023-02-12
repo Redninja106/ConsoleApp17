@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal struct Transform : IInspectable
+public struct Transform : IInspectable
 {
     private readonly Entity parentEntity;
     public Vector2 Position;

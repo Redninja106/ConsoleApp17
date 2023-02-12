@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Editor;
-internal abstract class DebugWindow
+public abstract class DebugWindow
 {
     public static readonly List<DebugWindow> Windows = new();
 

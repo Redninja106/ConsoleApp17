@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal class Entity : Component
+public class Entity : Component
 {
     private readonly List<Component> components = new();
     private bool canModifyComponents = true;
@@ -82,7 +83,7 @@ internal class Entity : Component
     public Component AddComponent(Type type)
     {
         var component = (Component)(Activator.CreateInstance(type) ?? throw new ArgumentException(null, nameof(type)));
-        var entityProperty = type.GetProperty(nameof(Component.ParentEntity)) ?? throw new ArgumentException(null, nameof(type));
+        var entityProperty = type.GetProperty(nameof(ParentEntity)) ?? throw new ArgumentException(null, nameof(type));
         entityProperty.SetValue(component, this);
 
         AddComponentCore(component);
@@ -202,10 +203,17 @@ internal class Entity : Component
 
     public static Entity Create(string archetypePath, Entity parent, string? name = null)
     {
+        return Create(archetypePath, Assembly.GetCallingAssembly(), parent, name);
+    }
+
+    public static Entity Create(string archetypePath, Assembly? mainAssembly, Entity parent, string? name = null)
+    {
+        mainAssembly ??= Assembly.GetCallingAssembly();
+
         var entity = Create(parent, name);
 
-        SceneLoader.AttachArchetype(entity, archetypePath);
-        
+        SceneLoader.AttachArchetype(entity, archetypePath, mainAssembly);
+
         return entity;
     }
 

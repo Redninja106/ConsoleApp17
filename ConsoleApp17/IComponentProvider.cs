@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp17;
 
-internal interface IComponentProvider<TComponent> where TComponent : Component
+public interface IComponentProvider<TComponent> where TComponent : Component
 {
     TComponent CreateComponent(Entity parent);
 }

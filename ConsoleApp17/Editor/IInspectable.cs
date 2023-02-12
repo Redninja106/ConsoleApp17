@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Editor;
-internal interface IInspectable
+public interface IInspectable
 {
     void Layout();
 }

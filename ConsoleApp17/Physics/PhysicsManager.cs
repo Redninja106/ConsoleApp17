@@ -8,7 +8,7 @@ using Genbox.VelcroPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 
 namespace ConsoleApp17.Physics;
-internal class PhysicsManager : Component
+public class PhysicsManager : Component
 {
     public World World { get; private set; }
     private PhysicsDebugView debugView;

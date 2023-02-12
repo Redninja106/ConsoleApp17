@@ -9,7 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Physics;
-internal class PhysicsBody : Component
+
+public class PhysicsBody : Component
 {
     public Vector2 Velocity
     {

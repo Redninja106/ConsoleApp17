@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Physics;
-internal readonly record struct Contact(Vector2 Positon, Vector2 Normal)
+public readonly record struct Contact(Vector2 Positon, Vector2 Normal)
 {
 }

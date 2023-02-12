@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Physics;
-internal abstract class Collider : Component
+public abstract class Collider : Component
 {
     public float Density { get; set; } = 1.0f;
     public float Friction { get; set; } = 0.2f;

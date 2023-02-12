@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal enum TransformSpace
+public enum TransformSpace
 {
     Local,
     Parent,

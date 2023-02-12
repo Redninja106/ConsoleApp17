@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17.Editor;
-internal class DebugDrawWindow : DebugWindow
+public class DebugDrawWindow : DebugWindow
 {
     public static DebugDrawWindow Instance = new();
 

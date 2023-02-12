@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
-internal static class VectorExtensions
+public static class VectorExtensions
 {
     /// <summary>
     /// Rotates a vector around the origin.

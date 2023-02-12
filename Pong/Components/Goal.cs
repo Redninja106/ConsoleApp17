@@ -1,11 +1,12 @@
-﻿using ConsoleApp17.Physics;
+﻿using ConsoleApp17;
+using ConsoleApp17.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Pong;
+namespace Pong.Components;
 internal class Goal : Component
 {
     public int PlayerIndex;
