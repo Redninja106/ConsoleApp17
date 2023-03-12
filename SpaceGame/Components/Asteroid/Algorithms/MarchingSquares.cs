@@ -1,4 +1,5 @@
-﻿using Genbox.VelcroPhysics;
+﻿using ConsoleApp17;
+using Genbox.VelcroPhysics;
 using Genbox.VelcroPhysics.Collision.Shapes;
 using Genbox.VelcroPhysics.Shared;
 using Genbox.VelcroPhysics.Tools.PolygonManipulation;
@@ -10,11 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Asteroid.Algorithms;
+namespace SpaceGame.Components.Asteroid.Algorithms;
 internal static class MarchingSquares
 {
     public const float THRESHOLD = 0.5f;
-    
+
     public static List<Vertices> GetVertices(MarchingSquaresVolume volume, MarchingSquaresVolume? rightNeighbor, MarchingSquaresVolume? topRightNeighbor, MarchingSquaresVolume? topNeighbor)
     {
         List<(Vector2 first, Vector2 second)> segments = new();
@@ -109,7 +110,7 @@ internal static class MarchingSquares
         var polys = polygons.Select(l => new Vertices(l.Select(v => v.AsXNA()))).ToList();
         polys = polys.Select(p => SimplifyTools.DouglasPeuckerSimplify(p, 0.0f)).ToList();
         polys = polys.Select(p => SimplifyTools.ReduceByDistance(p, 0.01f)).ToList();
-        
+
         // detect holes 
         foreach (var hole in polys.Where(p => p.IsCounterClockWise()).ToArray())
         {
@@ -124,9 +125,9 @@ internal static class MarchingSquares
                 }
             }
         }
-        
+
         // polys = polys.Select(p => SimplifyTools.ReduceByDistance(p, 0.01f));
-        
+
         return polys;
     }
 

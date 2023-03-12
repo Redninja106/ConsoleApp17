@@ -1,7 +1,8 @@
-﻿using ConsoleApp17.Components.Asteroid.Algorithms;
+﻿using ConsoleApp17;
+using SpaceGame.Components.Asteroid.Algorithms;
 using System.Runtime.InteropServices;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 
 class AsteroidRenderer : Component
 {
@@ -61,8 +62,8 @@ class AsteroidRenderer : Component
         Vector2 dir = to - from;
         float r = MathF.Atan2(dir.Y, dir.X);
         canvas.DrawLine(from, to);
-        canvas.DrawLine(to, to + (Vector2.One*.25f).Rotate(r));
-        canvas.DrawLine(to, to + (Vector2.One*.25f).Rotate(r+MathF.PI));
+        canvas.DrawLine(to, to + (Vector2.One * .25f).Rotate(r));
+        canvas.DrawLine(to, to + (Vector2.One * .25f).Rotate(r + MathF.PI));
     }
 
     public void BuildPolygons()

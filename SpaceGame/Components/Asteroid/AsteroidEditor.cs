@@ -1,6 +1,7 @@
-﻿using Genbox.VelcroPhysics.Dynamics;
+﻿using ConsoleApp17;
+using Genbox.VelcroPhysics.Dynamics;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 
 class AsteroidEditor : Component
 {
@@ -42,7 +43,7 @@ class AsteroidEditor : Component
 
         if (selectedManager is null)
         {
-            if (Mouse.IsButtonDown(MouseButton.Left)) 
+            if (Mouse.IsButtonDown(MouseButton.Left))
             {
                 Select(Entity.Create("./Components/Asteroid/asteroid.arch", Scene.Active).GetComponent<AsteroidChunkManager>());
             }
@@ -58,7 +59,7 @@ class AsteroidEditor : Component
             }
         }
 
-        if (selectedManager is not null) 
+        if (selectedManager is not null)
         {
             var mousePosition = selectedManager.ParentTransform.WorldToLocal(Camera.Active.ScreenToWorld(Mouse.Position));
 
@@ -147,7 +148,7 @@ class AsteroidEditor : Component
                 }
                 else
                 {
-                    value = MathF.Min(value, 1f-MathHelper.Normalize(EditSpeed / MathF.Sqrt(dist))); 
+                    value = MathF.Min(value, 1f - MathHelper.Normalize(EditSpeed / MathF.Sqrt(dist)));
                 }
                 value = MathHelper.Normalize(value);
             }

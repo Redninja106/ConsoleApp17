@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ConsoleApp17.Components.Asteroid.Algorithms;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 internal abstract class AsteroidBrush
 {
     public abstract Rectangle GetBounds(Vector2 position);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Editor;
+namespace SpaceGame;
 public class DebugDrawWindow : DebugWindow
 {
     public static DebugDrawWindow Instance = new();

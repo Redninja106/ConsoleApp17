@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17;
+namespace SpaceGame;
 public static class Archetypes
 {
     public const string Asteroid = "Components/Asteroid/asteroid.arch";

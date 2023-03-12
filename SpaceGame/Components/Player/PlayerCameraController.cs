@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ConsoleApp17;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Player;
+namespace SpaceGame.Components.Player;
 internal class PlayerCameraController : Component
 {
     float zoomFactor;

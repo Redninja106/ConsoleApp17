@@ -1,7 +1,8 @@
-﻿using ConsoleApp17.Components.Asteroid.Algorithms;
+﻿using ConsoleApp17;
 using ExCSS;
 using Genbox.VelcroPhysics.Shared;
 using Genbox.VelcroPhysics.Tools.Triangulation.TriangulationBase;
+using SpaceGame.Components.Asteroid.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 internal class AsteroidPolygon : Component
 {
     public List<Vertices> Edges { get; private set; } = new();

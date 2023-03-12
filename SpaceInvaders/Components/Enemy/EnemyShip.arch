@@ -1,0 +1,3 @@
+﻿extend "./Components/Ship/BaseShip.arch"
+EnemyShipController
+BoxRenderer

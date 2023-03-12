@@ -1,4 +1,5 @@
-﻿using ConsoleApp17.Physics;
+﻿using ConsoleApp17;
+using ConsoleApp17.Physics;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Player;
+namespace SpaceGame.Components.Player;
 internal class PlayerController : Component
 {
     public float MaxSpeed { get; set; }
@@ -34,10 +35,10 @@ internal class PlayerController : Component
 
         if (Keyboard.IsKeyDown(Key.W))
             moveDirection += Vector2.UnitY;
-        
+
         if (Keyboard.IsKeyDown(Key.A))
             moveDirection -= Vector2.UnitX;
-        
+
         if (Keyboard.IsKeyDown(Key.S))
             moveDirection -= Vector2.UnitY;
 
@@ -50,7 +51,7 @@ internal class PlayerController : Component
         }
 
         body.InternalBody.LinearDamping = .9f;
-        
+
         if (moveDirection.LengthSquared() > 1)
             moveDirection = moveDirection.Normalized();
 

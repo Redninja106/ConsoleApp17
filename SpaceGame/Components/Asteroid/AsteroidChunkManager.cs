@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleApp17.Components.Asteroid.Algorithms;
+using ConsoleApp17;
 using ConsoleApp17.Physics;
 using Genbox.VelcroPhysics.Shared;
 using Silk.NET.Input.Extensions;
+using SpaceGame.Components.Asteroid.Algorithms;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 internal class AsteroidChunkManager : Component
 {
     private readonly List<AsteroidChunk> chunks = new();
@@ -32,7 +33,7 @@ internal class AsteroidChunkManager : Component
         }
         else
         {
-            this.ParentEntity.Destroy();
+            ParentEntity.Destroy();
         }
 
         var polys = chunks.Select(chunk => (chunk, chunk.GetSibling<AsteroidPolygon>()!.Edges)).SelectMany(t => t.Edges.Select(e => new IslandPart(e, t.chunk))).ToList();
@@ -82,7 +83,7 @@ internal class AsteroidChunkManager : Component
 
     private AsteroidChunk CreateChunk(int x, int y)
     {
-        var entity = Entity.Create("./Components/Asteroid/asteroidChunk.arch", this.ParentEntity);
+        var entity = Entity.Create("./Components/Asteroid/asteroidChunk.arch", ParentEntity);
 
         entity.Transform.Position = new(x * AsteroidChunk.CHUNK_SIZE, y * AsteroidChunk.CHUNK_SIZE);
 
@@ -136,15 +137,15 @@ internal class AsteroidChunkManager : Component
     {
         if (islands.Count < 2)
             return;
-        
+
         islands.Sort((a, b) => Comparer<int>.Default.Compare(a.Count, b.Count));
 
         foreach (var island in islands.SkipLast(1))
         {
             var newAsteroid = Entity.Create("./Components/Asteroid/asteroid.arch", Scene.Active);
 
-            newAsteroid.Transform.Position = this.ParentTransform.Position;
-            newAsteroid.Transform.Rotation = this.ParentTransform.Rotation;
+            newAsteroid.Transform.Position = ParentTransform.Position;
+            newAsteroid.Transform.Rotation = ParentTransform.Rotation;
 
             var asteroidManager = newAsteroid.GetComponent<AsteroidChunkManager>();
 
@@ -159,7 +160,7 @@ internal class AsteroidChunkManager : Component
                     // copy whole chunk
                     oldVolume!.CopyTo(newVolume);
 
-                    this.chunks.Remove(part.Chunk);
+                    chunks.Remove(part.Chunk);
                     part.Chunk.ParentEntity.Destroy();
                 }
                 else

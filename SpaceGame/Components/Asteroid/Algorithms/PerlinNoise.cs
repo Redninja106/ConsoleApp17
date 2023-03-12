@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Asteroid.Algorithms;
+namespace SpaceGame.Components.Asteroid.Algorithms;
 
 // https://en.wikipedia.org/wiki/Perlin_noise#Implementation
 internal class PerlinNoise
@@ -41,7 +41,7 @@ internal class PerlinNoise
 
     private float GetGradient(int ix, int iy, float x, float y)
     {
-        var random = new Random(unchecked(seed ^ ~ix ^ ~iy + ix + (iy<<17)));
+        var random = new Random(unchecked(seed ^ ~ix ^ ~iy + ix + (iy << 17)));
         float angle = random.NextSingle() * MathF.Tau;
         Vector2 gradient = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
 
@@ -50,6 +50,6 @@ internal class PerlinNoise
         float dy = y - iy;
 
         // Compute the dot-product
-        return (dx * gradient.X + dy * gradient.Y);
+        return dx * gradient.X + dy * gradient.Y;
     }
 }

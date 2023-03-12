@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp17;
+
 public class Camera : Component
 {
     public int DisplayWidth { get; private set; }
@@ -18,6 +19,8 @@ public class Camera : Component
     public static Camera Active { get; set; }
 
     public float AspectRatio => DisplayWidth / (float)DisplayHeight;
+
+    public bool HorizontalAnchor { get; set; } = false;
 
     public float VerticalSize
     {
@@ -91,7 +94,7 @@ public class Camera : Component
     {
         return 
             Matrix3x2.CreateScale(1f, -1f) *
-            Matrix3x2.CreateScale(DisplayHeight / verticalSize) *
+            Matrix3x2.CreateScale(1f/GetScreenScale()) *
             Matrix3x2.CreateTranslation(DisplayWidth * .5f, DisplayHeight * .5f);
     }
 
@@ -99,7 +102,14 @@ public class Camera : Component
     {
         return 
             Matrix3x2.CreateTranslation(-DisplayWidth * .5f, -DisplayHeight * .5f) *
-            Matrix3x2.CreateScale(verticalSize / DisplayHeight) *
+            Matrix3x2.CreateScale(GetScreenScale()) *
             Matrix3x2.CreateScale(1f, -1f);
+    }
+
+    private float GetScreenScale()
+    {
+        return verticalSize / DisplayHeight; /* HorizontalAnchor ? 
+            HorizontalSize / DisplayWidth : 
+            verticalSize / DisplayHeight;*/
     }
 }

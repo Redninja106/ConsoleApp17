@@ -1,11 +1,12 @@
-﻿using Silk.NET.Core;
+﻿using ConsoleApp17;
+using Silk.NET.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Asteroid.Algorithms;
+namespace SpaceGame.Components.Asteroid.Algorithms;
 internal class MarchingSquaresVolume : Component
 {
     private float[] data;

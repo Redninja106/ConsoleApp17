@@ -1,4 +1,4 @@
-﻿using ConsoleApp17.Components.Asteroid.Algorithms;
+﻿using ConsoleApp17;
 using ConsoleApp17.Physics;
 using Genbox.VelcroPhysics;
 using Genbox.VelcroPhysics.Collision.Shapes;
@@ -7,10 +7,12 @@ using Genbox.VelcroPhysics.Dynamics;
 using Genbox.VelcroPhysics.Shared;
 using Genbox.VelcroPhysics.Tools.PolygonManipulation;
 using Genbox.VelcroPhysics.Tools.Triangulation.TriangulationBase;
+using SpaceGame;
+using SpaceGame.Components.Asteroid.Algorithms;
 using System.Diagnostics;
 using System.Runtime;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 
 class AsteroidCollider : Collider
 {
@@ -77,7 +79,7 @@ class AsteroidCollider : Collider
                 if (i == j)
                     continue;
 
-                if (Vector2.DistanceSquared(v[i].AsNumericsVector(), v[j].AsNumericsVector()) < (.5f * Settings.LinearSlop) * (.5f * Settings.LinearSlop))
+                if (Vector2.DistanceSquared(v[i].AsNumericsVector(), v[j].AsNumericsVector()) < .5f * Settings.LinearSlop * (.5f * Settings.LinearSlop))
                 {
                     return true;
                 }
@@ -138,15 +140,15 @@ class AsteroidCollider : Collider
         int prevVertexIndex = WrapIndex(vertexIndex - 1, polygon.Count);
         int nextVertexIndex = WrapIndex(vertexIndex + 1, polygon.Count);
 
-        Microsoft.Xna.Framework.Vector2 from = polygon[prevVertexIndex] - polygon[vertexIndex];
-        Microsoft.Xna.Framework.Vector2 to = polygon[nextVertexIndex] - polygon[vertexIndex];
-        float t = (to.X * from.Y) - (to.Y * from.X);
+        XNAVector2 from = polygon[prevVertexIndex] - polygon[vertexIndex];
+        XNAVector2 to = polygon[nextVertexIndex] - polygon[vertexIndex];
+        float t = to.X * from.Y - to.Y * from.X;
         return t > 0.01f;
     }
 
     private static int WrapIndex(int index, int length)
     {
-        return (index < 0 ? (index + length) : index) % length;
+        return (index < 0 ? index + length : index) % length;
     }
 
     //public List<Vertices> GetVertices()

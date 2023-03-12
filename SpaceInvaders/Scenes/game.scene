@@ -1,0 +1,7 @@
+﻿using PlayerShip = "Components/Player/PlayerShip.arch"
+using EnemyShip = "Components/Enemy/EnemyShip.arch"
+
+PrototypeBackground(Width=40 Height=60)
+PlayerShip
+EnemyShip
+Camera(VerticalSize=50)

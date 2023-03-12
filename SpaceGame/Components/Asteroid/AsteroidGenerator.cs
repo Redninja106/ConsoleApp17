@@ -1,11 +1,13 @@
-﻿using ConsoleApp17.Components.Asteroid.Algorithms;
+﻿using ConsoleApp17;
+using ConsoleApp17.Components.Asteroid.Algorithms;
+using SpaceGame.Components.Asteroid.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 internal class AsteroidGenerator : Component
 {
     public float Scale;

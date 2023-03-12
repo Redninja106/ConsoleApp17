@@ -131,12 +131,12 @@ public class Entity : Component
         }
     }
 
-    public T? GetComponent<T>() where T : Component
+    public T? GetComponent<T>()
     {
         return GetComponent<T>(_ => true);
     }
 
-    public T? GetComponent<T>(Predicate<T> predicate) where T : Component
+    public T? GetComponent<T>(Predicate<T> predicate)
     {
         return components.OfType<T>().FirstOrDefault(c => predicate(c));
     }

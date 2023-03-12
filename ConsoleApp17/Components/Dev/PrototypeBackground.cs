@@ -5,6 +5,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,10 @@ internal class PrototypeBackground : Component
 {
     private ITexture backgroundTexture;
 
-    public float Scale { get; set; } = 2;
-
+    public float Scale { get; set; } = 8;
+    public float Width { get; set; } = 800;
+    public float Height { get; set; } = 800;
+    
     public override void Initialize(Entity parent)
     {
         backgroundTexture = Assets.GetSpriteTexture("Assets/PrototypeTextures/Dark/texture_07.png");
@@ -26,25 +29,19 @@ internal class PrototypeBackground : Component
 
     public override void Render(ICanvas canvas)
     {
-        canvas.DrawRect(0, 0, Scale * 2, Scale * 2, Alignment.Center);
-
         var skcanvas = SkiaInterop.GetCanvas(canvas);
-        var bitmap = SkiaInterop.GetBitmap(backgroundTexture);
+        var paint = SkiaInterop.GetPaint(canvas.State);
 
-        SKPaint paint = new()
-        {
-            IsAntialias = false,
-            FilterQuality = SKFilterQuality.High,
-        };
+        var fillMatrix = Matrix3x2.CreateScale(Scale / MathF.Min(backgroundTexture.Width, backgroundTexture.Height));
+        paint.Shader = SKShader.CreateBitmap(SkiaInterop.GetBitmap(backgroundTexture), SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, fillMatrix.AsSKMatrix());
+        Rectangle rect = new(0, 0, Width, Height, Alignment.Center);
+        skcanvas.DrawRect(rect.X, rect.Y, rect.Width, rect.Height, paint);
+        paint.Shader.Dispose();
 
-        for (float y = -50; y < 50; y++)
-        {
-            for (float x = -50; x < 50; x++)
-            {
-                skcanvas.DrawBitmap(bitmap, new SKRect(x * Scale - float.Epsilon, y * Scale - float.Epsilon, (x + 1) * Scale + float.Epsilon, (y + 1) * Scale + float.Epsilon), paint);
-                // canvas.DrawTexture(backgroundTexture, new Rectangle(x, y, 1, 1, Alignment.Center));
-            }
-        }
+        //canvas.Antialias(true);
+        //var fillMatrix = Matrix3x2.CreateScale(Scale / MathF.Min(backgroundTexture.Width, backgroundTexture.Height));
+        //canvas.Fill(backgroundTexture, fillMatrix, TileMode.Repeat, TileMode.Repeat);
+        //canvas.DrawRect(0, 0, Width, Height, Alignment.Center);
 
         base.Render(canvas);
     }

@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Genbox.VelcroPhysics" Version="0.1.0-alpha.2" />
-    <PackageReference Include="SimulationFramework" Version="0.1.6" />
-    <PackageReference Include="SimulationFramework.Desktop" Version="0.1.6" />
+    <PackageReference Include="SimulationFramework" Version="0.1.7" />
+    <PackageReference Include="SimulationFramework.Desktop" Version="0.1.7" />
     <PackageReference Include="Sprache" Version="2.3.1" />
     <PackageReference Include="Svg" Version="3.4.4" />
   </ItemGroup>

@@ -7,19 +7,15 @@ namespace ConsoleApp17;
 public static class SceneLoader
 {
     private static Parser<string> parseIdentifier = Parse.Letter.Then(c => Parse.LetterOrDigit.Many().Select(chars => string.Concat(chars.Prepend(c)))).Token();
-    private static Dictionary<string, IEnumerable<SceneElement>> loadedArchetypeFiles = new();
+    private static Dictionary<string, IEnumerable<SceneElement>> loadedFiles = new();
     private static Parser<IEnumerable<SceneElement>> sceneParser = SceneElement.parser.Many().End();
 
     public static Scene LoadScene(string path, Assembly? mainAssembly = null)
     {
         mainAssembly ??= Assembly.GetCallingAssembly();
 
-        var content = File.ReadAllText(path);
-
-        var commentParser = new CommentParser();
-        var elements = sceneParser.Commented(commentParser).Parse(content) ?? throw new Exception();
-
-        return CreateScene(elements.Value, mainAssembly);
+        var elements = ParseSceneFile(path);
+        return CreateScene(elements, mainAssembly);
     }
 
     private static Scene CreateScene(IEnumerable<SceneElement> elements, Assembly mainAssembly)
@@ -39,6 +35,14 @@ public static class SceneLoader
     {
         switch (element)
         {
+            case ExtendElement openElement:
+                var baseContext = new SceneLoadContext(context.mainAssembly);
+                var baseElements = ParseSceneFile(openElement.Path.Value);
+                foreach (var baseElement in baseElements)
+                {
+                    CreateSceneElement(baseContext, parent, baseElement);
+                }
+                break;
             case EntityDesc entityDesc:
                 CreateEntity(context, parent, entityDesc);
                 break;
@@ -66,16 +70,16 @@ public static class SceneLoader
         }
     }
 
-    private static IEnumerable<SceneElement> GetArchetype(string path)
+    private static IEnumerable<SceneElement> ParseSceneFile(string path)
     {
-        if (loadedArchetypeFiles.TryGetValue(path, out var archetype))
+        if (loadedFiles.TryGetValue(path, out var archetype))
             return archetype;
 
         var content = File.ReadAllText(path);
 
         var parsed = sceneParser.Parse(content);
 
-        loadedArchetypeFiles.Add(path, parsed);
+        loadedFiles.Add(path, parsed);
 
         return parsed;
     }
@@ -137,7 +141,7 @@ public static class SceneLoader
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new Exception($"Member \"{property.PropertyName}\" not found.");
                 }
             }
         }
@@ -157,7 +161,7 @@ public static class SceneLoader
     {
         mainAssembly ??= Assembly.GetCallingAssembly();
 
-        AttachArchetype(parent, GetArchetype(archetypePath), mainAssembly);
+        AttachArchetype(parent, ParseSceneFile(archetypePath), mainAssembly);
     }
 
     class SceneLoadContext
@@ -189,17 +193,26 @@ public static class SceneLoader
         }
     }
 
-    record SceneElement(string TypeName)
+    record SceneElement()
     {
         public static readonly Parser<SceneElement> parser = 
             Parse.Or<SceneElement>(
                 UsingAliasElement.parser,
                 UsingImportElement.parser)
+            .Or(ExtendElement.parser)
             .Or(ComponentDesc.parser)
             .Or(EntityDesc.parser);
     }
 
-    record UsingAliasElement(string Alias, StringPropertyValue Path) : SceneElement(Alias)
+    record ExtendElement(StringPropertyValue Path) : SceneElement()
+    {
+        public static new readonly Parser<ExtendElement> parser =
+            from extendKeyword in Parse.String("extend").Token()
+            from path in StringPropertyValue.parser.Token()
+            select new ExtendElement(path);
+    }
+
+    record UsingAliasElement(string Alias, StringPropertyValue Path) : SceneElement()
     {
         public static new readonly Parser<UsingAliasElement> parser =
             from usingKeyword in Parse.String("using").Token()
@@ -209,7 +222,7 @@ public static class SceneLoader
             select new UsingAliasElement(alias, path);
     }
 
-    record UsingImportElement(string AssemblyName) : SceneElement(AssemblyName)
+    record UsingImportElement(string AssemblyName) : SceneElement()
     {
 
         public static new readonly Parser<UsingImportElement> parser =
@@ -219,14 +232,14 @@ public static class SceneLoader
 
     }
 
-    record EntityDesc(IEnumerable<SceneElement> children) : SceneElement(nameof(Entity))
+    record EntityDesc(IEnumerable<SceneElement> children) : SceneElement()
     {
         public static new readonly Parser<EntityDesc> parser =
             from children in Parse.Ref(() => SceneElement.parser).Many().Contained(Parse.Char('{').Token(), Parse.Char('}').Token())
             select new EntityDesc(children);
     }
 
-    record ComponentDesc(string TypeName, IEnumerable<PropertyDesc> PropertyDescs) : SceneElement(TypeName)
+    record ComponentDesc(string TypeName, IEnumerable<PropertyDesc> PropertyDescs) : SceneElement()
     {
         public static new readonly Parser<ComponentDesc> parser =
             from typeName in parseIdentifier

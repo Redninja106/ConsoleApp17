@@ -1,7 +1,9 @@
-﻿using ConsoleApp17.Components.Asteroid.Algorithms;
+﻿using ConsoleApp17;
+using SpaceGame;
+using SpaceGame.Components.Asteroid.Algorithms;
 using System.Diagnostics;
 
-namespace ConsoleApp17.Components.Asteroid;
+namespace SpaceGame.Components.Asteroid;
 
 class AsteroidChunk : Component
 {
@@ -43,7 +45,7 @@ class AsteroidChunk : Component
         canvas.Fill(Color.Red);
         canvas.FontStyle(.5f, FontStyle.Normal);
         canvas.Scale(1, -1);
-        canvas.DrawText($"{this.x}, {this.y}", 0, 0);
+        canvas.DrawText($"{x}, {y}", 0, 0);
 
         base.Render(canvas);
     }
