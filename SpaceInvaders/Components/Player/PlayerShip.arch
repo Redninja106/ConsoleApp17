@@ -1,3 +1,4 @@
-﻿extend "./Components/Ship/BaseShip.arch"
+﻿Transform(Position=(0,-9))
+extend "./Components/Ship/BaseShip.arch"
 PlayerShipController
 BoxRenderer

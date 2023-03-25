@@ -1,7 +1,9 @@
 ﻿using PlayerShip = "Components/Player/PlayerShip.arch"
 using EnemyShip = "Components/Enemy/EnemyShip.arch"
 
-PrototypeBackground(Width=40 Height=60)
+PrototypeBackground(Width=20 Height=20)
+CollisionManager
+EnemyShip(Position=(0,5))
 PlayerShip
-EnemyShip
-Camera(VerticalSize=50)
+
+Camera(VerticalSize=20)

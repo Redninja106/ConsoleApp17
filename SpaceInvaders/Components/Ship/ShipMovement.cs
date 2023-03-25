@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SpaceInvaders.Components.Ship;
 internal class ShipMovement : Component
 {
-    public float MoveSpeed = 5.0f;
+    public float MoveSpeed = 7.5f;
 
     private IShipController? controller;
 
@@ -22,6 +22,13 @@ internal class ShipMovement : Component
         if (controller is null)
             return;
 
-        this.ParentTransform.Position += controller.GetMovementDirection() * MoveSpeed * Time.DeltaTime;
+        ref var position = ref this.ParentTransform.Position;
+
+        var direction = controller.GetMovementDirection().Normalized();
+
+        position += direction * MoveSpeed * Time.DeltaTime;
+
+        position.X = Math.Clamp(position.X, -9.5f, 9.5f);
+        position.Y = Math.Clamp(position.Y, -9.5f, 9.5f);
     }
 }

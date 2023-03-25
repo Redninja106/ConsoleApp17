@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace ConsoleApp17;
 public class Entity : Component
 {
-    private readonly List<Component> components = new();
+    private readonly HashSet<Component> components = new();
     private bool canModifyComponents = true;
     
     private Transform transform;
@@ -48,9 +48,8 @@ public class Entity : Component
 
         ClearQueues();
 
-        for (int i = 0; i < components.Count; i++)
+        foreach (var component in components)
         {
-            var component = components[i];
             component.Initialize(this);
         }
 
@@ -119,7 +118,8 @@ public class Entity : Component
 
     public void RemoveComponent(Component component)
     {
-        Debug.Assert(components.Contains(component));
+        if (!components.Contains(component))
+            return;
 
         if (canModifyComponents)
         {
@@ -172,10 +172,8 @@ public class Entity : Component
         canvas.PushState();
         transform.ApplyTo(canvas);
 
-        for (int i = 0; i < components.Count; i++)
+        foreach (var component in components)
         {
-            var component = components[i];
-
             canvas.PushState();
             component.Render(canvas);
             canvas.PopState();
@@ -191,9 +189,8 @@ public class Entity : Component
     {
         canModifyComponents = false;
 
-        for (int i = 0; i < components.Count; i++)
+        foreach (var component in components)
         {
-            var component = components[i];
             component.Update();
         }
 

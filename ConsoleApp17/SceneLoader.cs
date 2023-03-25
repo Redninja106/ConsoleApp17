@@ -6,7 +6,7 @@ using System.Security.AccessControl;
 namespace ConsoleApp17;
 public static class SceneLoader
 {
-    private static Parser<string> parseIdentifier = Parse.Letter.Then(c => Parse.LetterOrDigit.Many().Select(chars => string.Concat(chars.Prepend(c)))).Token();
+    private static Parser<string> parseIdentifier = Parse.Letter.Then(c => Parse.LetterOrDigit.Many().Select(chars => string.Concat(chars.Prepend(c)))).Token().Commented().Select(c => c.Value).Token();
     private static Dictionary<string, IEnumerable<SceneElement>> loadedFiles = new();
     private static Parser<IEnumerable<SceneElement>> sceneParser = SceneElement.parser.Many().End();
 
@@ -78,9 +78,7 @@ public static class SceneLoader
         var content = File.ReadAllText(path);
 
         var parsed = sceneParser.Parse(content);
-
         loadedFiles.Add(path, parsed);
-
         return parsed;
     }
 
@@ -256,7 +254,7 @@ public static class SceneLoader
     {
         public static readonly Parser<PropertyDesc> parser =
             from propertyName in parseIdentifier
-            from equalsSign in Parse.Char('=').Token()
+            from equalsSign in Parse.Char('=').Token().Commented().Select(c => c.Value).Token()
             from value in PropertyValue.parser
             select new PropertyDesc(propertyName, value);
     }
@@ -265,7 +263,7 @@ public static class SceneLoader
     {
         public static readonly Parser<PropertyValue> parser =
             NumberPropertyValue.parser.Or(
-                StringPropertyValue.parser.Or<PropertyValue>(
+                StringPropertyValue.parser.Or(
                     Vector2PropertyValue.parser.Or<PropertyValue>(
                             BoolPropertyValue.parser
                         )
@@ -279,10 +277,10 @@ public static class SceneLoader
     {
         public static new readonly Parser<NumberPropertyValue> parser =
             from sign in Parse.Char('-').Select(c => c.ToString()).Optional()
-            from whole in Parse.Digit.AtLeastOnce().Token()
+            from whole in Parse.Digit.AtLeastOnce().Token().Commented().Select(c => c.Value).Token()
             from rest in (
                 from dot in Parse.Char('.')
-                from fractional in Parse.Digit.Many().Token()
+                from fractional in Parse.Digit.Many().Token().Commented().Select(c => c.Value).Token()
                 select string.Concat(fractional.Prepend(dot))
             ).Optional()
             select new NumberPropertyValue(decimal.Parse($"{sign.GetOrElse(string.Empty)}{string.Concat(whole)}{rest.GetOrElse(string.Empty)}"));
@@ -318,11 +316,11 @@ public static class SceneLoader
     record Vector2PropertyValue(NumberPropertyValue X, NumberPropertyValue Y) : PropertyValue
     {
         public static new readonly Parser<Vector2PropertyValue> parser =
-            from open in Parse.Char('(').Token()
+            from open in Parse.Char('(').Token().Commented().Select(c => c.Value).Token()
             from x in NumberPropertyValue.parser
-            from comma in Parse.Char(',').Token()
+            from comma in Parse.Char(',').Token().Commented().Select(c => c.Value).Token()
             from y in NumberPropertyValue.parser
-            from close in Parse.Char(')').Token()
+            from close in Parse.Char(')').Token().Commented().Select(c => c.Value).Token()
             select new Vector2PropertyValue(x, y);
 
         public override object GetValue() => new Vector2((float)(decimal)X.GetValue(), (float)(decimal)Y.GetValue());
@@ -331,7 +329,7 @@ public static class SceneLoader
     record BoolPropertyValue(bool Value) : PropertyValue
     {
         public static new readonly Parser<BoolPropertyValue> parser =
-            from literal in Parse.String("true").Or(Parse.String("false")).Token()
+            from literal in Parse.String("true").Or(Parse.String("false")).Token().Commented().Select(c => c.Value).Token()
             select new BoolPropertyValue(bool.Parse(string.Concat(literal)));
 
         public override object GetValue() => this.Value;

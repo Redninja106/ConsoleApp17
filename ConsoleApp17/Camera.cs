@@ -43,10 +43,6 @@ public class Camera : Component
     {
     }
 
-    public override void Layout()
-    {
-    }
-
     public override void Render(ICanvas canvas)
     {
     }
